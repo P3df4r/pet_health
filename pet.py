@@ -65,5 +65,4 @@ def create_recipe(id, indicacoes: dict):
     petdatabase = client_mongo["petdatabase"]
     petdata = petdatabase["petdata"]
     receitas = {"_id": id,  "receitas_anteriores":indicacoes}
-    petdata.insert_one(receitas)
-
+    petdata.insert_one(receitas) 
