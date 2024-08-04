@@ -404,7 +404,7 @@ def menu_tutor_view():
         os.system('clear')
 
 def view():
-    check_database()
+    #check_database()
     while True:
         try:
             os.system('clear')
