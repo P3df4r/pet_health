@@ -2,6 +2,7 @@ from bson.errors import InvalidId
 from pymongo import MongoClient
 from datetime import datetime
 from bson.objectid import ObjectId
+import docker
 
 options_mongo = '$options'
 regex_mongo = '$regex'
@@ -25,9 +26,6 @@ def register_pet(nome: str,
                  receitas_anteriores: dict, 
                  procedimentos_realizados: dict, consultas_realizadas: list):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["petdata"]
@@ -52,9 +50,6 @@ def register_pet(nome: str,
 
 def remove_pet(id):
     try: 
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["petdata"]
@@ -81,9 +76,6 @@ def remove_pet(id):
 
 def altered_info_pet(campo:str, info:str, id):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["petdata"]
@@ -110,9 +102,6 @@ def altered_info_pet(campo:str, info:str, id):
 
 def register_tutor(tutor, idade_tutor:int, endereco_tutor, telefone_tutor:str):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["pet_tutor"]
@@ -133,9 +122,6 @@ def register_tutor(tutor, idade_tutor:int, endereco_tutor, telefone_tutor:str):
 
 def remove_tutor(id):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["pet_tutor"]
@@ -158,9 +144,6 @@ def remove_tutor(id):
 
 def altered_info_tutor(campo:str, info:str, id):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["pet_tutor"]
@@ -187,9 +170,6 @@ def altered_info_tutor(campo:str, info:str, id):
 
 def register_relationship(id_tutor:str, id_pet: str):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["pet_relationship"]
@@ -209,9 +189,6 @@ def register_relationship(id_tutor:str, id_pet: str):
         return erro_type_relationship
 
 def register_consult(id_paciente, date: datetime):
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["petconsult"]
@@ -229,9 +206,6 @@ def register_consult(id_paciente, date: datetime):
 
 def remove_consult(id_paciente):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["petconsult"]
@@ -258,9 +232,6 @@ def remove_consult(id_paciente):
 
 def altered_consult(campo, valor, id_paciente):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["petconsult"]
@@ -287,9 +258,6 @@ def altered_consult(campo, valor, id_paciente):
 
 def register_anamenase(id_paciente, last_anamnase: str):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petanamnase = petdatabase["petanamnase"]
@@ -321,9 +289,6 @@ def see_infos_pet(search:str):
             return 'não existe' 
 def see_infos_tutor(search:str):
     try:
-        
-        
-        
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["pet_tutor"]
@@ -343,57 +308,6 @@ def see_infos_tutor(search:str):
         return erro_value
     except TypeError:
         return "Não foi possivel verificar as informações"
-=======
-# Registra os dados do pet no banco de dados
-def register_pet(nome, idade_anos, idade_meses, raca, especie, sexo: str, alergia: list, objeto_acompanhado: list, receitas_anteriores: dict, procedimentos_realizados: dict, consultas_realizadas: list):
-    client = docker.DockerClient()
-    container = client.containers.get('pet_heath_mongodb')
-    ip_add = container.attrs['NetworkSettings']['IPAddress']
-    client_mongo = MongoClient(ip_add) 
-    petdatabase = client_mongo["petdatabase"]
-    petdata = petdatabase["petdata"]
-    credenciais = {"nome": nome, "idade_anos": idade_anos, "idade_meses": idade_meses, "raca": raca, "especie": especie, "sexo": sexo, "alergia": alergia, "objeto_acompanhado": objeto_acompanhado, "receitas_anteriores": receitas_anteriores, "procedimentos_realizados": procedimentos_realizados, "consultas_realizadas": consultas_realizadas}
-    petdata.insert_one(credenciais)
-
-# Coleta os dados do tutor
-def register_tutor(tutor, idade_tutor, endereco_tutor, telefone_tutor):
-    tutor = tutor
-    idade_tutor = idade_tutor 
-    endereco_tutor= endereco_tutor
-    telefone_tutor = telefone_tutor
-
-# Registra os dados da consulta no banco de dados
-def register_consult(id_paciente, diagnostico: list, date: int):
-    client = docker.DockerClient()
-    container = client.containers.get('pet_heath_mongodb')
-    ip_add = container.attrs['NetworkSettings']['IPAddress']
-    client_mongo = MongoClient(ip_add) 
-    petdatabase = client_mongo["petdatabase"]
-    petconsult = petdatabase["petconsult"]
-    consulta = {"_id": id_paciente, "diagnostico": diagnostico, "date": date}
-    petconsult.insert_one(consulta)
-
-# Registra os dados da anamenase no banco de dados
-def register_anamenase(id_paciente, last_anamnase):
-    client = docker.DockerClient()
-    container = client.containers.get('pet_heath_mongodb')
-    ip_add = container.attrs['NetworkSettings']['IPAddress']
-    client_mongo = MongoClient(ip_add) 
-    petdatabase = client_mongo["petdatabase"]
-    petanamnase = petdatabase["petanamnase"]
-    anamnase = {"_id": id_paciente, "anamnase": last_anamnase}
-    petanamnase.insert_one(anamnase)
-
-# Atualiza informações do pet no banco de dados
-def altered_info_pet(campo, info):
-    client = docker.DockerClient()
-    container = client.containers.get('pet_heath_mongodb')
-    ip_add = container.attrs['NetworkSettings']['IPAddress']
-    client_mongo = MongoClient(ip_add) 
-    petdatabase = client_mongo["petdatabase"]
-    petdata = petdatabase["petdata"]
-    credenciais = {campo: info}
-    petdata.insert_one(credenciais)
 
 # Lê as informações do pet no banco de dados
 def see_infos(id):
@@ -410,6 +324,9 @@ def see_infos(id):
 # Registra as receitas no banco de dados
 def create_recipe(id, indicacoes: dict):
     try:    
+        client = docker.DockerClient()
+        container = client.containers.get('pet_heath_mongodb')
+        ip_add = container.attrs['NetworkSettings']['IPAddress']
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["petdata"]
@@ -431,14 +348,6 @@ def create_recipe(id, indicacoes: dict):
         return erro_index
     except KeyError:
         return erro_index
-    client = docker.DockerClient()
-    container = client.containers.get('pet_heath_mongodb')
-    ip_add = container.attrs['NetworkSettings']['IPAddress']
-    client_mongo = MongoClient(ip_add) 
-    petdatabase = client_mongo["petdatabase"]
-    petdata = petdatabase["petdata"]
-    receitas = {"_id": id,  "receitas_anteriores":indicacoes}
-    petdata.insert_one(receitas)
 
 # Lê os dados da anamenase
 def see_anamenase(id):
