@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, request
 import pet
-import datetime
 
 app = Flask(__name__)
 
 @app.route('/addpet', methods=['GET', 'POST'])
-def dados():
+def addpet():
     data = request.get_json()
     nome = data['nome']
     idade = data['idade']
@@ -13,7 +12,7 @@ def dados():
     especie = data['especie']
     id_tutor = data['ID_tutor']
     sexo = data['sexo']
-    return 0
+    return pet.register_pet(nome, idade, peso, especie, id_tutor, sexo) 
 
 @app.route('/rm_pet', methods=['GET', 'POST'])
 def rmpet():
@@ -30,7 +29,7 @@ def reg_tutor():
     telefone = data['telefone']
     email = data['email']
     cpf = data['cpf']
-    return pet.register_tutor(tutor, idade_tutor, endereco_tutor, telefone)
+    return pet.register_tutor(tutor, email, endereco_tutor, cpf, telefone)
 
 @app.route('/rm_tutor', methods=['GET', 'POST'])
 def rmtutor():
@@ -44,7 +43,7 @@ def addficha():
     id_paciente = data['id_tutelado']
     obs = data['observacoes']
     id_hist_clin = data['id_hist_clin']
-    return pet.register_anamenase(id_paciente,last_anamenase)
+    return pet.add_ficha(id_paciente, obs, id_hist_clin)
 
 @app.route('/see_info_pet', methods=['GET', 'POST'])
 def hist_clin():
@@ -54,12 +53,17 @@ def hist_clin():
     exame = data['exame']
     medicamento = data['medicamento']
     suplementacao = data['suplementacao']
-    return teste
+    return pet.add_hist_clin(alergia, cirurgia, exame, medicamento, suplementacao)
 
 @app.route('/see_info_tutor', methods=['GET', 'POST'])
 def seeinfotutor():
     nome = ''
     return pet.see_infos_tutor(nome)
+
+@app.route('/see_info_tutor', methods=['GET', 'POST'])
+def seeinfopet():
+    nome = ''
+    return pet.see_infos_pet(nome)
 
 @app.route('/teste', methods=['GET', 'POST'])
 def teste():

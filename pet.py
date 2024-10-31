@@ -16,20 +16,16 @@ erro_type_consulta = "Não foi possivel adicionar a consulta"
 ip_add = 'localhost:27017'
 
 def register_pet(nome: str, 
-                 idade_anos:int, 
-                 idade_meses: int, 
-                 raca: str, 
+                 idade:int,
+                 peso: float,
                  especie: str, 
-                 sexo: bool, 
-                 alergia: str, 
-                 objeto_acompanhado: str, 
-                 receitas_anteriores: dict, 
-                 procedimentos_realizados: dict, consultas_realizadas: list):
+                 sexo: bool,
+                 id_tutor: int):
     try:
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petdata = petdatabase["petdata"]
-        credenciais = {"nome": nome, "idade_anos": idade_anos, "idade_meses": idade_meses, "raca": raca, "especie": especie, "sexo": sexo, "alergia": alergia, "objeto_acompanhado": objeto_acompanhado, "receitas_anteriores": receitas_anteriores, "procedimentos_realizados": procedimentos_realizados, "consultas_realizadas": consultas_realizadas}
+        credenciais = {"nome": nome, "idade": idade, "peso": peso, "especie": especie, "sexo": sexo, "id_tor": id_tutor}
         try:
             petdata.insert_one(credenciais)
             return 'Inserido com sucesso'
@@ -100,12 +96,12 @@ def altered_info_pet(campo:str, info:str, id):
     except KeyError:
         return erro_index
 
-def register_tutor(tutor, idade_tutor:int, endereco_tutor, telefone_tutor:str):
+def register_tutor(tutor, endereco_tutor, telefone_tutor:str, email, cpf):
     try:
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["pet_tutor"]
-        tutor = {"Tutor": tutor, "idade_tutor": idade_tutor, "endereco": endereco_tutor, "telefone": telefone_tutor}
+        tutor = {"Tutor": tutor, "email": email, "endereco": endereco_tutor, "telefone": telefone_tutor, "cpf": cpf}
         try:
             petconsult.insert_one(tutor)
             return 'Inserido com sucesso'
@@ -168,12 +164,12 @@ def altered_info_tutor(campo:str, info:str, id):
     except KeyError:
         return erro_index
 
-def register_relationship(id_tutor:str, id_pet: str):
+def add_ficha(id_pet: str, obs, id_hist_clin):
     try:
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["pet_relationship"]
-        relationship = {"id_tutor": id_tutor, "id_pet": id_pet}
+        relationship = {"id_pet": id_pet, "obs": obs, "id_hist_clin": id_hist_clin}
         try:
             petconsult.insert_one(relationship)
             return 'Inserido com sucesso'
@@ -188,13 +184,13 @@ def register_relationship(id_tutor:str, id_pet: str):
     except TypeError:
         return erro_type_relationship
 
-def register_consult(id_paciente, date: datetime):
+def add_hist_clin(alergia: str, cirurgia: str, exame: str, medicamento: str, suplementacao: str):
         client_mongo = MongoClient(ip_add) 
         petdatabase = client_mongo["petdatabase"]
         petconsult = petdatabase["petconsult"]
-        consulta = {"ID_paciente": ObjectId(id_paciente), "date": date}
+        hist_clin = {"alergia":alergia,"cirurgia":cirurgia,"exame":exame,"medicamento":medicamento,"suplementacao":suplementacao}
         try:
-            petconsult.insert_one(consulta)
+            petconsult.insert_one(hist_clin)
         except ValueError:
             return erro_value
         except TypeError:
@@ -203,78 +199,6 @@ def register_consult(id_paciente, date: datetime):
             return erro_index
         except KeyError:
             return erro_value
-
-def remove_consult(id_paciente):
-    try:
-        client_mongo = MongoClient(ip_add) 
-        petdatabase = client_mongo["petdatabase"]
-        petconsult = petdatabase["petconsult"]
-        consulta = {"_id": ObjectId(id_paciente)}
-        try:
-            petconsult.delete_one(consulta)
-            return 'Removido com sucesso'
-        except ValueError:
-            return erro_value
-        except TypeError:
-            return erro_type
-        except IndexError:
-            return erro_index
-        except KeyError:
-            return erro_value
-    except InvalidId:
-        return erro_value
-    except TypeError:
-        return erro_type_consulta
-    except IndexError:
-        return erro_index
-    except KeyError:
-        return erro_index
-
-def altered_consult(campo, valor, id_paciente):
-    try:
-        client_mongo = MongoClient(ip_add) 
-        petdatabase = client_mongo["petdatabase"]
-        petconsult = petdatabase["petconsult"]
-        consulta = {"_id": ObjectId(id_paciente), campo: valor}
-        try:
-            petconsult.insert_one(consulta)
-            return 'Modificado com sucesso'
-        except ValueError:
-            return erro_value
-        except TypeError:
-            return erro_type
-        except IndexError:
-            return erro_index
-        except KeyError:
-            return erro_value
-    except InvalidId:
-        return erro_value
-    except TypeError:
-        return erro_type_consulta
-    except IndexError:
-        return erro_index
-    except KeyError:
-        return erro_index
-
-def register_anamenase(id_paciente, last_anamnase: str):
-    try:
-        client_mongo = MongoClient(ip_add) 
-        petdatabase = client_mongo["petdatabase"]
-        petanamnase = petdatabase["petanamnase"]
-        anamnase = {"_id": id_paciente, "anamnase": last_anamnase}
-        try:
-            petanamnase.insert_one(anamnase)
-            return 'Inserido com sucesso'
-        except ValueError:
-            return erro_value
-        except TypeError:
-            return erro_type
-        except IndexError:
-            return erro_index
-        except KeyError:
-            return erro_value
-    except TypeError:
-        return erro_type_anamenase
 
 def see_infos_pet(search:str):
         client_mongo = MongoClient('localhost:27017') 
@@ -287,6 +211,7 @@ def see_infos_pet(search:str):
                     return coluna + ":", valor
         else:
             return 'não existe' 
+
 def see_infos_tutor(search:str):
     try:
         client_mongo = MongoClient(ip_add) 
