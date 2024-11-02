@@ -45,7 +45,7 @@ def addficha():
     id_hist_clin = data['id_hist_clin']
     return pet.add_ficha(id_paciente, obs, id_hist_clin)
 
-@app.route('/see_info_pet', methods=['GET', 'POST'])
+@app.route('/hist_clin', methods=['GET', 'POST'])
 def hist_clin():
     data = request.get_json()
     alergia = data['alergia']
@@ -60,16 +60,15 @@ def seeinfotutor():
     nome = ''
     return pet.see_infos_tutor(nome)
 
-@app.route('/see_info_tutor', methods=['GET', 'POST'])
+@app.route('/see_info_pet', methods=['GET', 'POST'])
 def seeinfopet():
     nome = ''
     return pet.see_infos_pet(nome)
 
-@app.route('/teste', methods=['GET', 'POST'])
+@app.route('/teste', methods=['GET'])
 def teste():
-    teste = request.get_json()
-    print(teste)
-    return teste
+    #teste = request.get_json()
+    return 'teste'
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(debug=True, host='0.0.0.0', port=int("4002")) 
